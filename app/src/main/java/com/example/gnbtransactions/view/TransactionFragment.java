@@ -41,7 +41,6 @@ public class TransactionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
         return inflater.inflate(R.layout.fragment_transaction, container, false);
     }
@@ -62,15 +61,15 @@ public class TransactionFragment extends Fragment {
         }
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(sku);
 
-        HashMap<String, List<Transaction>> products = transactionViewModel.getProducts();
-        HashMap<String, Double> rates = transactionViewModel.getDirectRates();
+        HashMap<String, List<Transaction>> transactions = transactionViewModel.getTransactionsMap();
+        HashMap<String, Double> rates = transactionViewModel.getDirectRatesMap();
         ArrayList<String> list_row = new ArrayList<>();
 
-        BigDecimal totalAmount = calculateTotalAmount(products, rates, sku);
+        BigDecimal totalAmount = calculateTotalAmount(transactions, rates, sku);
 
         list_row.add("TOTAL : " + totalAmount + " EUR");
 
-        for(Transaction transaction : products.get(sku)) {
+        for(Transaction transaction : transactions.get(sku)) {
 
             BigDecimal amount = new BigDecimal(transaction.getAmount());
             amount = amount.setScale(2, BigDecimal.ROUND_HALF_EVEN);
@@ -83,12 +82,23 @@ public class TransactionFragment extends Fragment {
         listView.setAdapter(arrayAdapter);
     }
 
-    private BigDecimal calculateTotalAmount(HashMap<String, List<Transaction>> products,
+    /**
+     * This method calculates the sum of all the transactions of type sku,
+     * converting all currencies into EUR using the given rates. After each
+     * conversion, the converted value is rounded using banker's rounding
+     * (round half even)
+     *
+     * @param transactions  - all transactions of type sku
+     * @param rates         - rates of any available currencies to EUR
+     * @param sku           - selected sku
+     * @return              - total amount value in EUR currency
+     */
+    private BigDecimal calculateTotalAmount(HashMap<String, List<Transaction>> transactions,
                                             HashMap<String, Double> rates, String sku) {
 
         BigDecimal totalAmount = new BigDecimal("0.00");
 
-        for(Transaction transaction : products.get(sku)) {
+        for(Transaction transaction : transactions.get(sku)) {
 
             BigDecimal conversionRate = new BigDecimal(rates.get(transaction.getCurrency()));
             BigDecimal amount = new BigDecimal(transaction.getAmount());
@@ -99,7 +109,8 @@ public class TransactionFragment extends Fragment {
 
             totalAmount = totalAmount.add(product);
         }
-            return totalAmount;
+
+        return totalAmount;
     }
 
     private void initView(){

@@ -5,22 +5,20 @@ import com.example.gnbtransactions.R;
 import com.example.gnbtransactions.model.Rate;
 import com.example.gnbtransactions.model.Transaction;
 
-
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
 
-public class RatesWebService {
+public class TransactionWebService {
 
-    private RatesApi ratesApi;
+    private TransactionApi ratesApi;
 
-    public RatesWebService() {
+    public TransactionWebService() {
 
-        ratesApi = RatesApiClient.getClient().create(RatesApi.class);
+        ratesApi = TransactionApiClient.getClient().create(TransactionApi.class);
     }
 
     public Call<List<Rate>> queryRates() {
@@ -33,9 +31,8 @@ public class RatesWebService {
         return ratesApi.queryTransactions();
     }
 
-    private interface RatesApi {
+    private interface TransactionApi {
 
-        @Headers({"Accept: application/json"})
         @GET("/rates.json")
         Call<List<Rate>> queryRates();
 
@@ -45,7 +42,7 @@ public class RatesWebService {
 
 }
 
-class RatesApiClient {
+class TransactionApiClient {
 
     private static Retrofit retrofit = null;
 

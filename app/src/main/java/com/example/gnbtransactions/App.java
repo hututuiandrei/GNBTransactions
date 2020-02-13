@@ -3,14 +3,14 @@ package com.example.gnbtransactions;
 import android.app.Application;
 import android.content.Context;
 
-import com.example.gnbtransactions.repo.Repository;
+import com.example.gnbtransactions.repo.TransactionRepository;
 
 import timber.log.Timber;
 
 public class App extends Application {
 
     private static Context mContext;
-    private static Repository repository;
+    private static TransactionRepository transactionRepository;
 
     @Override
     public void onCreate() {
@@ -21,7 +21,7 @@ public class App extends Application {
         if (BuildConfig.DEBUG)
             Timber.plant(new Timber.DebugTree());
 
-        repository = new Repository(this);
+        transactionRepository = new TransactionRepository(this);
 
         Timber.d("App has initialized...");
     }
@@ -29,7 +29,7 @@ public class App extends Application {
         return mContext;
     }
 
-    public static Repository getRepository() {
-        return repository;
+    public static TransactionRepository getTransactionRepository() {
+        return transactionRepository;
     }
 }

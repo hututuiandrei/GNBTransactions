@@ -5,7 +5,7 @@ import android.app.Application;
 import com.example.gnbtransactions.App;
 import com.example.gnbtransactions.model.Rate;
 import com.example.gnbtransactions.model.Transaction;
-import com.example.gnbtransactions.repo.Repository;
+import com.example.gnbtransactions.repo.TransactionRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +16,7 @@ import androidx.lifecycle.LiveData;
 
 public class TransactionViewModel extends AndroidViewModel {
 
-    private static Repository repository;
+    private static TransactionRepository transactionRepository;
 
     private final LiveData<List<Rate>> rates;
     private final LiveData<List<String>> skus;
@@ -26,21 +26,21 @@ public class TransactionViewModel extends AndroidViewModel {
     public TransactionViewModel(@NonNull Application application) {
         super(application);
 
-        repository = this.<App>getApplication().getRepository();
-        rates = repository.getRatesLiveData();
-        skus = repository.getTransactionsLiveData();
-        products = repository.getProducts();
-        directRates = repository.getDirectRatesMap();
+        transactionRepository = this.<App>getApplication().getTransactionRepository();
+        rates = transactionRepository.getRatesLiveData();
+        skus = transactionRepository.getSkusLiveData();
+        products = transactionRepository.getProductsMap();
+        directRates = transactionRepository.getDirectRatesMap();
     }
 
     public void downloadRates() {
 
-        repository.downloadRates();
+        transactionRepository.downloadRates();
     }
 
     public void downdloadTransactions() {
 
-        repository.downloadTransactions();
+        transactionRepository.downloadTransactions();
     }
 
     public LiveData<List<Rate>> getRatesObservable() {
@@ -49,9 +49,9 @@ public class TransactionViewModel extends AndroidViewModel {
 
     public LiveData<List<String>> getSkusObservable() { return skus; }
 
-    public HashMap<String, List<Transaction>> getProducts() {
+    public HashMap<String, List<Transaction>> getTransactionsMap() {
         return products;
     }
 
-    public HashMap<String, Double> getDirectRates() { return directRates; }
+    public HashMap<String, Double> getDirectRatesMap() { return directRates; }
 }

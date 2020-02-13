@@ -7,17 +7,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.gnbtransactions.R;
-import com.example.gnbtransactions.model.Transaction;
 import com.example.gnbtransactions.view.TransactionFragment;
 
-import java.util.HashMap;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class PageListAdapter extends
-        RecyclerView.Adapter<PageListAdapter.PageViewHolder>{
+public class RecyclerViewAdapter extends
+        RecyclerView.Adapter<RecyclerViewAdapter.PageViewHolder>{
 
     class PageViewHolder extends RecyclerView.ViewHolder {
 
@@ -32,12 +32,6 @@ public class PageListAdapter extends
 
                 String sku = skus.get(getAdapterPosition());
 
-                List<Transaction> transactions = products.get(sku);
-
-//                for(Transaction transaction : products.get(sku)) {
-//
-//                    Timber.d(transaction.getSku() + " " + transaction.getAmount() + " " + transaction.getCurrency());
-//                }
                 Bundle bundle = new Bundle();
                 bundle.putString("sku", sku);
 
@@ -52,14 +46,12 @@ public class PageListAdapter extends
     }
 
     private List<String> skus;
-    HashMap<String, List<Transaction>> products;
 
-    public PageListAdapter(List<String> skus, HashMap<String, List<Transaction>> products) {
+    public RecyclerViewAdapter(List<String> skus) {
         this.skus = skus;
-        this.products = products;
-
     }
 
+    @NotNull
     @Override
     public PageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -72,7 +64,6 @@ public class PageListAdapter extends
     public void onBindViewHolder(PageViewHolder holder, int position) {
 
         String current = skus.get(position);
-
         holder.skuTextView.setText(current);
     }
 
@@ -89,9 +80,5 @@ public class PageListAdapter extends
         if (skus != null)
             return skus.size();
         else return 0;
-    }
-
-    public void setProducts(HashMap<String, List<Transaction>> products) {
-        this.products = products;
     }
 }

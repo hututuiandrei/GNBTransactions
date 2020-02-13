@@ -9,15 +9,14 @@ import android.os.Bundle;
 
 import com.example.gnbtransactions.R;
 import com.example.gnbtransactions.viewmodel.TransactionViewModel;
-import com.example.gnbtransactions.adapters.PageListAdapter;
+import com.example.gnbtransactions.adapters.RecyclerViewAdapter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private PageListAdapter adapter;
+    private RecyclerViewAdapter adapter;
     private TransactionViewModel transactionViewModel;
 
     @Override
@@ -34,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new PageListAdapter(new ArrayList<>(), new HashMap<>());
+        adapter = new RecyclerViewAdapter(new ArrayList<>());
         recyclerView.setAdapter(adapter);
 
         transactionViewModel.getSkusObservable().observe(this, skus -> {
@@ -43,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
             if(!skus.isEmpty()) {
                 recyclerView.post(() -> adapter.addskus(skus));
-                adapter.setProducts(transactionViewModel.getProducts());
             }
         });
     }
