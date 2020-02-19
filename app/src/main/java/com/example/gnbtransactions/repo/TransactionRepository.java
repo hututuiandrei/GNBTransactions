@@ -30,7 +30,7 @@ public class TransactionRepository {
     private HashMap<String, List<Transaction>> productsMap;
     private HashMap<String, Double> directRatesMap;
 
-    public TransactionRepository(Application application) {
+    private TransactionRepository(Application application) {
 
         transactionWebService = new TransactionWebService();
         productsMap = new HashMap<>();
