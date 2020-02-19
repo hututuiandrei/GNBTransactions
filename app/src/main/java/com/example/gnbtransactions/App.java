@@ -10,7 +10,6 @@ import timber.log.Timber;
 public class App extends Application {
 
     private static Context mContext;
-    private static TransactionRepository transactionRepository;
 
     @Override
     public void onCreate() {
@@ -21,15 +20,9 @@ public class App extends Application {
         if (BuildConfig.DEBUG)
             Timber.plant(new Timber.DebugTree());
 
-        transactionRepository = new TransactionRepository(this);
-
         Timber.d("App has initialized...");
     }
     public static Context getContext(){
         return mContext;
-    }
-
-    public static TransactionRepository getTransactionRepository() {
-        return transactionRepository;
     }
 }

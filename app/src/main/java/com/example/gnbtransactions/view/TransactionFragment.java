@@ -6,23 +6,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import timber.log.Timber;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toolbar;
 
 import com.example.gnbtransactions.R;
-import com.example.gnbtransactions.model.Transaction;
 import com.example.gnbtransactions.viewmodel.TransactionViewModel;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class TransactionFragment extends Fragment {
 
@@ -53,64 +45,18 @@ public class TransactionFragment extends Fragment {
 
         initView();
 
-        String sku = null;
-
         Bundle bundle = this.getArguments();
         if(bundle != null) {
-            sku = bundle.get("sku").toString();
+
+            String sku = bundle.get("sku").toString();
+
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(sku);
+
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getContext(),
+                    android.R.layout.simple_list_item_1, transactionViewModel.getTransactionsList(sku));
+
+            listView.setAdapter(arrayAdapter);
         }
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(sku);
-
-        HashMap<String, List<Transaction>> transactions = transactionViewModel.getTransactionsMap();
-        HashMap<String, Double> rates = transactionViewModel.getDirectRatesMap();
-        ArrayList<String> list_row = new ArrayList<>();
-
-        BigDecimal totalAmount = calculateTotalAmount(transactions, rates, sku);
-
-        list_row.add("TOTAL : " + totalAmount + " EUR");
-
-        for(Transaction transaction : transactions.get(sku)) {
-
-            BigDecimal amount = new BigDecimal(transaction.getAmount());
-            amount = amount.setScale(2, BigDecimal.ROUND_HALF_EVEN);
-            list_row.add(amount + " " + transaction.getCurrency());
-        }
-
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_list_item_1, list_row);
-
-        listView.setAdapter(arrayAdapter);
-    }
-
-    /**
-     * This method calculates the sum of all the transactions of type sku,
-     * converting all currencies into EUR using the given rates. After each
-     * conversion, the converted value is rounded using banker's rounding
-     * (round half even)
-     *
-     * @param transactions  - all transactions of type sku
-     * @param rates         - rates of any available currencies to EUR
-     * @param sku           - selected sku
-     * @return              - total amount value in EUR currency
-     */
-    private BigDecimal calculateTotalAmount(HashMap<String, List<Transaction>> transactions,
-                                            HashMap<String, Double> rates, String sku) {
-
-        BigDecimal totalAmount = new BigDecimal("0.00");
-
-        for(Transaction transaction : transactions.get(sku)) {
-
-            BigDecimal conversionRate = new BigDecimal(rates.get(transaction.getCurrency()));
-            BigDecimal amount = new BigDecimal(transaction.getAmount());
-
-            BigDecimal product = amount.multiply(conversionRate);
-
-            product = product.setScale(2, BigDecimal.ROUND_HALF_EVEN);
-
-            totalAmount = totalAmount.add(product);
-        }
-
-        return totalAmount;
     }
 
     private void initView(){

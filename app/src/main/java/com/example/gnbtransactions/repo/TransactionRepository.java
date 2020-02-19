@@ -7,6 +7,7 @@ import com.example.gnbtransactions.webservice.TransactionWebService;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,8 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 public class TransactionRepository {
+
+    private static TransactionRepository instance = null;
 
     private TransactionWebService transactionWebService;
 
@@ -35,6 +38,15 @@ public class TransactionRepository {
 
         rates = new MutableLiveData<>();
         skus = new MutableLiveData<>();
+    }
+
+    public static TransactionRepository getInstance(Application application) {
+
+        if(instance == null) {
+
+            instance = new TransactionRepository(application);
+        }
+        return instance;
     }
 
     public void downloadRates() {
@@ -191,6 +203,55 @@ public class TransactionRepository {
         return directRatesMap;
     }
 
+    /**
+     * This method calculates the sum of all the transactions of type sku,
+     * converting all currencies into EUR using the given rates. After each
+     * conversion, the converted value is rounded using banker's rounding
+     * (round half even)
+     *
+     * @param transactions  - all transactions of type sku
+     * @param rates         - rates of any available currencies to EUR
+     * @param sku           - selected sku
+     * @return              - total amount value in EUR currency
+     */
+    private BigDecimal calculateTotalAmount(HashMap<String, List<Transaction>> transactions,
+                                            HashMap<String, Double> rates, String sku) {
+
+        BigDecimal totalAmount = new BigDecimal("0.00");
+
+        for(Transaction transaction : transactions.get(sku)) {
+
+            BigDecimal conversionRate = new BigDecimal(rates.get(transaction.getCurrency()));
+            BigDecimal amount = new BigDecimal(transaction.getAmount());
+
+            BigDecimal product = amount.multiply(conversionRate);
+
+            product = product.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+
+            totalAmount = totalAmount.add(product);
+        }
+
+        return totalAmount;
+    }
+
+    public List<String> getTransactionsList(String sku) {
+
+        BigDecimal totalAmount = calculateTotalAmount(productsMap, directRatesMap, sku);
+
+        ArrayList<String> transactionsList = new ArrayList<>();
+
+        transactionsList.add("TOTAL : " + totalAmount + " EUR");
+
+        for(Transaction transaction : productsMap.get(sku)) {
+
+            BigDecimal amount = new BigDecimal(transaction.getAmount());
+            amount = amount.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+            transactionsList.add(amount + " " + transaction.getCurrency());
+        }
+
+        return transactionsList;
+    }
+
     public MutableLiveData<List<Rate>> getRatesLiveData() {
         return rates;
     }
@@ -199,11 +260,5 @@ public class TransactionRepository {
         return skus;
     }
 
-    public HashMap<String, List<Transaction>> getProductsMap() {
-        return productsMap;
-    }
 
-    public HashMap<String, Double> getDirectRatesMap() {
-        return directRatesMap;
-    }
 }

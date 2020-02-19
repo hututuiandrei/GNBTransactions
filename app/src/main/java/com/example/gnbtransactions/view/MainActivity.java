@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
         transactionViewModel = new TransactionViewModel(getApplication());
         transactionViewModel.downloadRates();
-        transactionViewModel.downdloadTransactions();
+        transactionViewModel.downloadTransactions();
 
         initView();
 
@@ -36,14 +36,15 @@ public class MainActivity extends AppCompatActivity {
         adapter = new RecyclerViewAdapter(new ArrayList<>());
         recyclerView.setAdapter(adapter);
 
-        transactionViewModel.getSkusObservable().observe(this, skus -> {
+        transactionViewModel.getSkusObservable().observe(this, skus ->
+                transactionViewModel.getRatesObservable().observe(this, rates -> {
 
             Timber.d("CHANGED");
 
             if(!skus.isEmpty()) {
                 recyclerView.post(() -> adapter.addskus(skus));
             }
-        });
+        }));
     }
 
     private void initView() {
