@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Timber.d("ON CREATE");
+
         transactionViewModel = new TransactionViewModel(getApplication());
         transactionViewModel.downloadRates();
         transactionViewModel.downloadTransactions();
@@ -45,6 +47,48 @@ public class MainActivity extends AppCompatActivity {
                 recyclerView.post(() -> adapter.addskus(skus));
             }
         }));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Timber.d("ON START");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Timber.d("ON RESUME");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Timber.d("ON PAUSE");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        Timber.d("ON STOP");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        Timber.d("ON RESTART");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        Timber.d("ON DESTROY");
     }
 
     private void initView() {

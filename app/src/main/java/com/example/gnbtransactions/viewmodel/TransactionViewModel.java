@@ -28,17 +28,19 @@ public class TransactionViewModel extends AndroidViewModel {
 
     public void downloadRates() {
 
-        transactionRepository.downloadRates();
+        if(rates.getValue() == null) {
+            transactionRepository.downloadRates();
+        }
     }
 
     public void downloadTransactions() {
 
-        transactionRepository.downloadTransactions();
+        if(skus.getValue() == null) {
+            transactionRepository.downloadTransactions();
+        }
     }
 
-    public LiveData<List<Rate>> getRatesObservable() {
-        return rates;
-    }
+    public LiveData<List<Rate>> getRatesObservable() { return rates; }
 
     public LiveData<List<String>> getSkusObservable() { return skus; }
 
